@@ -9,6 +9,7 @@ CONFIG += c++17
 # Libraries
 SOURCES += \
     duckx/src/duckx.cpp \
+    filehandler.cpp \
     thirdparty/pugixml/pugixml.cpp \
     thirdparty/zip/zip.c
 
@@ -16,6 +17,7 @@ HEADERS += \
     duckx/include/constants.hpp \
     duckx/include/duckx.hpp \
     duckx/include/duckxiterator.hpp \
+    filehandler.h \
     thirdparty/pugixml/pugixml.hpp \
     thirdparty/pugixml/pugiconfig.hpp \
     thirdparty/zip/zip.h \
@@ -36,7 +38,7 @@ HEADERS += \
 FORMS += \
     window.ui
 
-# Copy template files to build folder
+# Copy the whole templates folder to build folder
 assets.files = $$PWD/templates/*
 assets.path = $$OUT_PWD/templates
 COPIES += assets

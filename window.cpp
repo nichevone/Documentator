@@ -1,9 +1,6 @@
 #include "window.h"
 #include "ui_window.h"
 
-// FOR DEBUGGING
-#include <fstream>
-
 Window::Window(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Window)
@@ -18,36 +15,34 @@ Window::~Window()
     delete ui;
 }
 
+
+
 void Window::testDocOpen()
 {
-    // Get build directory (debug or release, the children of build directory)
-    QDir baseDirectory(QCoreApplication::applicationDirPath());
+    QString resultFilePath = QFileDialog::getSaveFileName(
+        this,
+        "Сохранить готовый документ docx",
+        "", ""
+        "Word Documents (*.docx)"
+        );
 
-    // Get build directory
-    QString directoryName = baseDirectory.dirName().toLower();
+    FileHandler* fh = new FileHandler();
 
-    // If not in build directory, switch to it
-    if (
-        directoryName == "debug" ||
-        directoryName == "release"
-        )
-    {
-        baseDirectory.cdUp();
-    }
+    // Get source.docx absolute path
+    std::string sourceFilePath = fh->getTemplateFilePath("source.docx");
+    // Copy source.docx with with a new name temp.docx
+    fh->copy(QString::fromStdString(sourceFilePath), resultFilePath);
 
-    // Get source file
-    std::string sourcePath =
-        baseDirectory
-        .filePath("templates/source.docx")
-        .toStdString();
-
-
-    duckx::Document doc(sourcePath);
+    duckx::Document doc(resultFilePath.toStdString());
     doc.open();
 
     for (auto p : doc.paragraphs()) {
         for (auto r : p.runs()) {
             qDebug() << QString::fromStdString(r.get_text());
+            r.set_text("Шпиониро...");
         }
     }
+
+    doc.save();
+    delete fh;
 }

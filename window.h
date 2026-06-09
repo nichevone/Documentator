@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtWidgets>
 #include "duckx.hpp"
+#include "filehandler.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,6 +21,7 @@ public:
     ~Window() override;
 
 private:
+    /* Variables & constants: */
     Ui::Window *ui;
 
 private slots:
