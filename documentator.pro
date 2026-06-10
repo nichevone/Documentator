@@ -8,12 +8,14 @@ CONFIG += c++17
 
 # Libraries
 SOURCES += \
+    docxmanipulator.cpp \
     duckx/src/duckx.cpp \
     filehandler.cpp \
     thirdparty/pugixml/pugixml.cpp \
     thirdparty/zip/zip.c
 
 HEADERS += \
+    docxmanipulator.h \
     duckx/include/constants.hpp \
     duckx/include/duckx.hpp \
     duckx/include/duckxiterator.hpp \
