@@ -32,7 +32,7 @@ std::string FileHandler::getTemplateFilePath(std::string fileName)
     // Get source file
     std::string sourcePath =
         baseDirectory
-            ->filePath("templates/" + QString::fromStdString(fileName)) // ARGUMENT fileName USED
+            ->filePath("templates/" + QString::fromStdString(fileName))
             .toStdString();
 
     return sourcePath;
@@ -42,6 +42,7 @@ void FileHandler::copy(QString sourceFileAbsPath, QString copyFileAbsPath)
 {
     if (QFile::copy(sourceFileAbsPath, copyFileAbsPath)) {
         qDebug() << "File from:\n" << sourceFileAbsPath << "\nwas copied succesfully to:\n" << copyFileAbsPath;
+        return;
     }
 
     qDebug() << "File copy failed (somehow)";

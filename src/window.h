@@ -5,6 +5,8 @@
 #include <QtWidgets>
 #include "duckx.hpp"
 #include "filehandler.h"
+#include "docxmanipulator.h"
+#include "constants.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

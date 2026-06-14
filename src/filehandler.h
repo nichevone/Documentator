@@ -13,7 +13,7 @@ public:
     std::string getTemplateFilePath(std::string fileName);
 
     // Copy file so DuckX won't rewrite the original template file
-    void copy(QString sourceFileAbsPath, QString copyFileName);
+    void copy(QString sourceFileAbsPath, QString copyFileAbsPath);
 
 private:
     QDir* baseDirectory;
