@@ -10,18 +10,27 @@ class DocxManipulator
 {
 public:
     DocxManipulator();
+    QStringList getDocumentBookmarks();
     void replaceRunBookmarks(
         duckx::Run& run,
         const QStringList& bookmarks,
         const QStringList& values
         );
-    void concatBookmarkIfSplitted(duckx::Paragraph& paragraph);
+
+    void concatBookmarkIfSplitted(
+        duckx::Paragraph& paragraph
+        );
 
 private:
     void replaceAllFound(
         std::string& text,
         const std::string& bookmarkName,
         const std::string& textToReplace
+        );
+
+    std::string trim(
+        const std::string& str,
+        const std::string& whitespace = " \t"
         );
 };
 

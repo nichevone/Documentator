@@ -9,7 +9,7 @@ private:
     static inline std::unordered_map<std::string, std::pair<QStringList, QStringList>> bookmarksValuesMap;
 
 public:
-    inline void add(std::string key, QStringList bookmarks, QStringList values) {
+    static void add(std::string key, QStringList bookmarks, QStringList values) {
         // Returns success flag. Possible use in the future
         bookmarksValuesMap.try_emplace(key, bookmarks, values);
     }
