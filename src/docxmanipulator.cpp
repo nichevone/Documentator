@@ -21,6 +21,9 @@ void DocxManipulator::replaceRunBookmarks
     // Replace bookmarks that current run could have
     for (int i = 0; i < bookmarks.length(); i++) {
 
+        // DEBUG
+        qDebug() << "-   BEFORE REPLACING" << QString::fromStdString(run.get_text());
+
         replaceAllFound(
             text,
             bookmarks.at(i).toStdString(),
@@ -29,7 +32,10 @@ void DocxManipulator::replaceRunBookmarks
 
         run.set_text(text);
 
-        qDebug() << QString::fromStdString(run.get_text());
+        // DEBUG
+        qDebug() << "-   AFTER REPLACING" << QString::fromStdString(run.get_text());
+
+
     }
 }
 
@@ -73,18 +79,19 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
             // Get the full unsplitted bookmark
             std::string fullBookmark = firstText + secondText + thirdText;
 
+            // DEBUG
             qDebug() << "FULL BOOKMARK" << QString::fromStdString(fullBookmark);
-            qDebug() << QString::fromStdString(firstText)
-                     << QString::fromStdString(secondText)
+            qDebug() << QString::fromStdString(firstText) << "-"
+                     << QString::fromStdString(secondText) << "-"
                      << QString::fromStdString(thirdText);
 
-            // Set full bookmark in the first run
-            runs[i].set_text(fullBookmark);
+            // Set full bookmark in the second run
+            runs[i+1].set_text(fullBookmark);
 
-            // Next two runs probably will be the bookmark name and the "}}"
+            // The runs in between should be "{{" and "}}"
             // So clear them
-            runs[i+1].set_text(" ");
-            runs[i+2].set_text(" ");
+            runs[i].set_text("");
+            runs[i+2].set_text("");
 
             // Move index by two because we checked two items already
             i += 2;

@@ -8,6 +8,19 @@ Window::Window(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(testDocOpen()));
+
+    const QStringList flatCardValues = {"14.06.2026", "123", "456", "13.06.2026", "Иванов Иван Иванович", "06.02.2000", "г. Артём"};
+    const QStringList flatCardBookmarks = {
+        "{{дата}}",
+        "{{номер_верхний}}",
+        "{{номер_нижний}}",
+        "{{дата_номера}}",
+        "{{фио}}",
+        "{{дата_рождения}}",
+        "{{адрес}}"
+    };
+
+    Constants::add("FLAT_CARD", flatCardBookmarks, flatCardValues);
 }
 
 Window::~Window()
@@ -28,7 +41,7 @@ void Window::testDocOpen()
 
     FileHandler* fh = new FileHandler();
     DocxManipulator manipulator;
-    const QStringList values = {"14.06.2026", "123", "456", "13.06.2026", "Иванов Иван Иванович", "06.02.2000", "г. Артём"};
+
 
     // Get source.docx absolute path
     std::string sourceFilePath = fh->getTemplateFilePath("flat_card.docx");
@@ -42,7 +55,7 @@ void Window::testDocOpen()
     for (auto paragraph : doc.paragraphs()) {
         manipulator.concatBookmarkIfSplitted(paragraph);
         for (auto run : paragraph.runs()) {
-            manipulator.replaceRunBookmarks(run, constants::FLAT_CARD_LIST, values);
+            manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
         }
     }
 
@@ -53,7 +66,7 @@ void Window::testDocOpen()
                 for (auto paragraph : cell.paragraphs()) {
                     manipulator.concatBookmarkIfSplitted(paragraph);
                     for (auto run : paragraph.runs()) {
-                        manipulator.replaceRunBookmarks(run, constants::FLAT_CARD_LIST, values);
+                        manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
                     }
                 }
             }
