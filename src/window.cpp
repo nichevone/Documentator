@@ -6,8 +6,10 @@ Window::Window(QWidget *parent)
     , ui(new Ui::Window)
 {
     ui->setupUi(this);
+    ui->scrollArea->setWidgetResizable(true);
 
-    connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(testDocOpen()));
+    connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadDocument()));
+    connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveDocument()));
 }
 
 Window::~Window()
@@ -17,54 +19,122 @@ Window::~Window()
 
 
 
-void Window::testDocOpen()
+void Window::loadDocument()
 {
-    QString resultFilePath = QFileDialog::getSaveFileName(
+    QString loadPath = QFileDialog::getOpenFileName(
+        this,
+        "Открыть шаблон документа docx",
+        "", ""
+        "Word Documents (*.docx)"
+        );
+
+    if (loadPath.isEmpty()) {
+        return;
+    }
+
+    // Reset scroll area
+    ui->scrollArea->setWidget(new QWidget());
+
+    fh.addTemplateFilePath(loadPath);
+
+    duckx::Document doc(loadPath.toStdString());
+    doc.open();
+
+    // getDocumentBookmarks(doc) also concatenates bookmarks if they were splitted!
+    // Need to keep that in mind
+    QStringList bookmarksList = manipulator.getDocumentBookmarks(doc);
+    Constants::setBookmarks(DOCUMENT_KEY, bookmarksList);
+    // DEBUG
+    qDebug() << "BOOKMARKS LIST" << bookmarksList;
+
+    if (bookmarksList.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "В документе не найдены закладки");
+        return;
+    }
+
+    setScrollArea();
+    doc.save();
+}
+
+void Window::saveDocument()
+{
+    QStringList valuesList = getScrollAreaValues();
+    Constants::setValues(DOCUMENT_KEY, valuesList);
+
+    QString savePath = QFileDialog::getSaveFileName(
         this,
         "Сохранить готовый документ docx",
         "", ""
         "Word Documents (*.docx)"
         );
 
-    FileHandler* fh = new FileHandler();
-    DocxManipulator manipulator;
+    if (savePath.isEmpty()) {
+        return;
+    }
 
-
-    // Get source.docx absolute path
-    std::string sourceFilePath = fh->getTemplateFilePath("flat_card.docx");
-    // Copy source.docx with with a new name temp.docx
-    fh->copy(QString::fromStdString(sourceFilePath), resultFilePath);
-
-    duckx::Document doc(resultFilePath.toStdString());
+    fh.copy(fh.getTemplateFilePath(), savePath);
+    duckx::Document doc(savePath.toStdString());
     doc.open();
 
-    QStringList bookmarksList = manipulator.getDocumentBookmarks(doc);
-    qDebug() << bookmarksList;
+    // Loop through paragraphs
+    processParagraphs(doc.paragraphs());
 
-    // // Loop through paragraphs
-    // for (auto paragraph : doc.paragraphs()) {
-    //     manipulator.concatBookmarkIfSplitted(paragraph);
-    //     for (auto run : paragraph.runs()) {
-    //         manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
-    //     }
-    // }
-
-    // // Loop through tables
-    // for (auto table : doc.tables()) {
-    //     for (auto row : table.rows()) {
-    //         for (auto cell : row.cells()) {
-    //             for (auto paragraph : cell.paragraphs()) {
-    //                 manipulator.concatBookmarkIfSplitted(paragraph);
-    //                 for (auto run : paragraph.runs()) {
-    //                     manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    // Loop through tables
+    for (auto table : doc.tables()) {
+        for (auto row : table.rows()) {
+            for (auto cell : row.cells()) {
+                processParagraphs(cell.paragraphs());
+            }
+        }
+    }
 
     doc.save();
-    delete fh;
+    QMessageBox::information(this, "Успех", "Документ успешно сохранен");
+}
 
-    QMessageBox::information(this, "Успех", "Файл успешно сохранен!");
+
+
+void Window::processParagraphs(duckx::Paragraph& paragraphs)
+{
+    for (auto paragraph : paragraphs) {
+        for (auto run : paragraph.runs()) {
+            manipulator.replaceRunBookmarks(
+                run,
+                Constants::getBookmarks(DOCUMENT_KEY),
+                Constants::getValues(DOCUMENT_KEY)
+                );
+        }
+    }
+}
+
+QStringList Window::getScrollAreaValues()
+{
+    QStringList values;
+
+    QList<QLineEdit*> lineEdits = ui->scrollArea->widget()->findChildren<QLineEdit*>();
+    for (int i = 0; i < lineEdits.size(); ++i) {
+        QString text = lineEdits.at(i)->text();
+        values.append(text);
+    }
+
+    qDebug() << "VALUES LIST" << values;
+    return values;
+}
+
+void Window::setScrollArea()
+{
+    QStringList bookmarks = Constants::getBookmarks(DOCUMENT_KEY);
+    QWidget* container = new QWidget();
+    QGridLayout* gridLayout = new QGridLayout(container);
+
+    for (int row = 0; row < bookmarks.length(); row++) {
+        QLabel* label = new QLabel(bookmarks.at(row));
+        QLineEdit* edit = new QLineEdit();
+
+        gridLayout->addWidget(label, row, 0);
+        gridLayout->addWidget(edit, row, 1);
+    }
+
+    ui->scrollArea->setWidget(container);
+    gridLayout->deleteLater();
 }

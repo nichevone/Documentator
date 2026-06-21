@@ -12,14 +12,14 @@ public:
     DocxManipulator();
     QStringList getDocumentBookmarks(duckx::Document& doc);
 
-private:
-    QStringList getParagraphsBookmarks(duckx::Paragraph& paragraphs);
-
     void replaceRunBookmarks(
         duckx::Run& run,
         const QStringList& bookmarks,
         const QStringList& values
         );
+
+private:
+    QStringList getParagraphsBookmarks(duckx::Paragraph& paragraphs);
 
     void concatBookmarkIfSplitted(
         duckx::Paragraph& paragraph
@@ -31,10 +31,7 @@ private:
         const std::string& textToReplace
         );
 
-    std::string trim(
-        const std::string& str,
-        const std::string& whitespace = " \t"
-        );
+    std::string onlyBraces(const std::string& str);
 };
 
 #endif // DOCXMANIPULATOR_H

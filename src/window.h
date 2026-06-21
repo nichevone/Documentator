@@ -23,11 +23,18 @@ public:
     ~Window() override;
 
 private:
-    /* Variables & constants: */
     Ui::Window *ui;
+    FileHandler fh = FileHandler();
+    DocxManipulator manipulator = DocxManipulator();
+    const std::string DOCUMENT_KEY = "j48";
+
+    void processParagraphs(duckx::Paragraph& paragrpahs);
+    QStringList getScrollAreaValues();
+    void setScrollArea();
 
 private slots:
-    void testDocOpen();
+    void loadDocument();
+    void saveDocument();
 
 };
 #endif // WINDOW_H

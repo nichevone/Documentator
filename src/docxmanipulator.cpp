@@ -25,35 +25,6 @@ QStringList DocxManipulator::getDocumentBookmarks(duckx::Document& doc)
     return documentBookmarks;
 }
 
-
-
-QStringList DocxManipulator::getParagraphsBookmarks(duckx::Paragraph& paragraphs)
-{
-    QStringList paragraphsBookmarks;
-
-    for (auto paragraph : paragraphs) {
-        // Firstly, concatenate the bookmarks
-        concatBookmarkIfSplitted(paragraph);
-        for (auto run : paragraph.runs()) {
-
-            const std::string runText = run.get_text();
-            const size_t leftBracesPos = runText.find_first_of("{{");
-            const size_t rightBracesPos = runText.find_first_of("}}");
-            const size_t bookmarkEndPos = rightBracesPos + 2;
-
-            if (leftBracesPos != std::string::npos &&
-                rightBracesPos != std::string::npos) {
-
-                paragraphsBookmarks.append(QString::fromStdString(
-                    runText.substr(leftBracesPos, bookmarkEndPos))
-                    );
-            }
-        }
-    }
-
-    return paragraphsBookmarks;
-}
-
 void DocxManipulator::replaceRunBookmarks
     (
         duckx::Run& run,
@@ -91,6 +62,35 @@ void DocxManipulator::replaceRunBookmarks
     }
 }
 
+
+
+QStringList DocxManipulator::getParagraphsBookmarks(duckx::Paragraph& paragraphs)
+{
+    QStringList paragraphsBookmarks;
+
+    for (auto paragraph : paragraphs) {
+        // Firstly, concatenate the bookmarks
+        concatBookmarkIfSplitted(paragraph);
+        for (auto run : paragraph.runs()) {
+
+            const std::string runText = run.get_text();
+            const size_t leftBracesPos = runText.find_first_of("{{");
+            const size_t rightBracesPos = runText.find_first_of("}}");
+            const size_t bookmarkEndPos = rightBracesPos + 2;
+
+            if (leftBracesPos != std::string::npos &&
+                rightBracesPos != std::string::npos) {
+
+                paragraphsBookmarks.append(QString::fromStdString(
+                    runText.substr(leftBracesPos, bookmarkEndPos))
+                    );
+            }
+        }
+    }
+
+    return paragraphsBookmarks;
+}
+
 void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
 {
     std::vector<duckx::Run> runs;
@@ -113,7 +113,10 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
                  << QString::fromStdString(secondText) << "-"
                  << QString::fromStdString(thirdText);
 
-        if (trim(firstText) == "{{" && trim(thirdText) == "}}") {
+        qDebug() << "TRIM" << onlyBraces(firstText) << onlyBraces(thirdText);
+
+        if (onlyBraces(firstText) == "{{" && onlyBraces(thirdText) == "}}") {
+
 
             // Get the full unsplitted bookmark
             std::string fullBookmark = firstText + secondText + thirdText;
@@ -154,18 +157,22 @@ void DocxManipulator::replaceAllFound
     }
 }
 
-std::string DocxManipulator::trim(
-    const std::string& str,
-    const std::string& whitespace
-    )
+std::string DocxManipulator::onlyBraces(const std::string& str)
 {
-    const auto strBegin = str.find_first_not_of(whitespace);
-    if (strBegin == std::string::npos) {
-        return ""; // no content
+    const std::string leftBraces = "{{";
+    const std::string rightBraces = "}}";
+
+    const size_t leftBracesPos = str.find(leftBraces);
+    const size_t rightBracesPos = str.find(rightBraces);
+
+    if (leftBracesPos == std::string::npos && rightBracesPos == std::string::npos) {
+        return "";
     }
 
-    const auto strEnd = str.find_last_not_of(whitespace);
-    const auto strRange = strEnd - strBegin + 1;
+    if (leftBracesPos != std::string::npos &&
+        (rightBracesPos == std::string::npos || leftBracesPos < rightBracesPos)) {
+        return leftBraces;
+    }
 
-    return str.substr(strBegin, strRange);
+    return rightBraces;
 }

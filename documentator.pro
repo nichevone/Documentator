@@ -43,11 +43,6 @@ INCLUDEPATH += $$PWD/thirdparty/duckx/include
 INCLUDEPATH += $$PWD/thirdparty/pugixml
 INCLUDEPATH += $$PWD/thirdparty/zip
 
-# Copy the whole templates folder to build folder
-assets.files = $$PWD/templates/*
-assets.path = $$OUT_PWD/templates
-COPIES += assets
-
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

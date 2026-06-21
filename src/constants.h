@@ -9,9 +9,14 @@ private:
     static inline std::unordered_map<std::string, std::pair<QStringList, QStringList>> bookmarksValuesMap;
 
 public:
-    static void add(std::string key, QStringList bookmarks, QStringList values) {
-        // Returns success flag. Possible use in the future
-        bookmarksValuesMap.try_emplace(key, bookmarks, values);
+    static void setBookmarks(std::string key, const QStringList& bookmarks) {
+        auto& pair = bookmarksValuesMap[key];
+        pair.first = bookmarks;
+    }
+
+    static void setValues(std::string key, const QStringList& values) {
+        auto& pair = bookmarksValuesMap[key];
+        pair.second = values;
     }
 
     static QStringList getBookmarks(std::string key) {

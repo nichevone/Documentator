@@ -1,49 +1,23 @@
 #include "filehandler.h"
 
-FileHandler::FileHandler()
+FileHandler::FileHandler() {}
+
+void FileHandler::copy(QString templateFileAbsPath, QString copyFileAbsPath)
 {
-    // Get build directory (debug or release, the children of build directory)
-    // It shouldn't change while the program runs
-    baseDirectory = new QDir(QCoreApplication::applicationDirPath());
-
-    // Convert path to just the directory name
-    QString directoryName = baseDirectory->dirName().toLower();
-
-    // If currently not in build directory, switch to it
-    if (
-        directoryName == "debug" ||
-        directoryName == "release"
-        )
-    {
-        baseDirectory->cdUp();
-    }
-
-}
-
-FileHandler::~FileHandler()
-{
-    delete baseDirectory;
-}
-
-
-
-std::string FileHandler::getTemplateFilePath(std::string fileName)
-{
-    // Get source file
-    std::string sourcePath =
-        baseDirectory
-            ->filePath("templates/" + QString::fromStdString(fileName))
-            .toStdString();
-
-    return sourcePath;
-}
-
-void FileHandler::copy(QString sourceFileAbsPath, QString copyFileAbsPath)
-{
-    if (QFile::copy(sourceFileAbsPath, copyFileAbsPath)) {
-        qDebug() << "File from:\n" << sourceFileAbsPath << "\nwas copied succesfully to:\n" << copyFileAbsPath;
+    if (QFile::copy(templateFileAbsPath, copyFileAbsPath)) {
+        qDebug() << "File from:\n" << templateFileAbsPath << "\nwas copied succesfully to:\n" << copyFileAbsPath;
         return;
     }
 
     qDebug() << "File copy failed (somehow)";
+}
+
+void FileHandler::addTemplateFilePath(QString path)
+{
+    templateFilePath = path;
+}
+
+QString FileHandler::getTemplateFilePath()
+{
+    return templateFilePath;
 }
