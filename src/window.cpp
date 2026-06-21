@@ -8,19 +8,6 @@ Window::Window(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(testDocOpen()));
-
-    const QStringList flatCardValues = {"14.06.2026", "123", "456", "13.06.2026", "Иванов Иван Иванович", "06.02.2000", "г. Артём"};
-    const QStringList flatCardBookmarks = {
-        "{{дата}}",
-        "{{номер_верхний}}",
-        "{{номер_нижний}}",
-        "{{дата_номера}}",
-        "{{фио}}",
-        "{{дата_рождения}}",
-        "{{адрес}}"
-    };
-
-    Constants::add("FLAT_CARD", flatCardBookmarks, flatCardValues);
 }
 
 Window::~Window()
@@ -51,27 +38,30 @@ void Window::testDocOpen()
     duckx::Document doc(resultFilePath.toStdString());
     doc.open();
 
-    // Loop through paragraphs
-    for (auto paragraph : doc.paragraphs()) {
-        manipulator.concatBookmarkIfSplitted(paragraph);
-        for (auto run : paragraph.runs()) {
-            manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
-        }
-    }
+    QStringList bookmarksList = manipulator.getDocumentBookmarks(doc);
+    qDebug() << bookmarksList;
 
-    // Loop through tables
-    for (auto table : doc.tables()) {
-        for (auto row : table.rows()) {
-            for (auto cell : row.cells()) {
-                for (auto paragraph : cell.paragraphs()) {
-                    manipulator.concatBookmarkIfSplitted(paragraph);
-                    for (auto run : paragraph.runs()) {
-                        manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
-                    }
-                }
-            }
-        }
-    }
+    // // Loop through paragraphs
+    // for (auto paragraph : doc.paragraphs()) {
+    //     manipulator.concatBookmarkIfSplitted(paragraph);
+    //     for (auto run : paragraph.runs()) {
+    //         manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
+    //     }
+    // }
+
+    // // Loop through tables
+    // for (auto table : doc.tables()) {
+    //     for (auto row : table.rows()) {
+    //         for (auto cell : row.cells()) {
+    //             for (auto paragraph : cell.paragraphs()) {
+    //                 manipulator.concatBookmarkIfSplitted(paragraph);
+    //                 for (auto run : paragraph.runs()) {
+    //                     manipulator.replaceRunBookmarks(run, Constants::getBookmarks("FLAT_CARD"), Constants::getValues("FLAT_CARD"));
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     doc.save();
     delete fh;

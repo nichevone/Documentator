@@ -2,17 +2,64 @@
 
 DocxManipulator::DocxManipulator() {}
 
-QStringList DocxManipulator::getDocumentBookmarks()
+QStringList DocxManipulator::getDocumentBookmarks(duckx::Document& doc)
 {
-    return QStringList{};
+    QStringList documentBookmarks;
+
+    // Loop through paragraphs
+    documentBookmarks.append(
+        getParagraphsBookmarks(doc.paragraphs())
+        );
+
+    // Loop through tables
+    for (auto table : doc.tables()) {
+        for (auto row : table.rows()) {
+            for (auto cell : row.cells()) {
+                documentBookmarks.append(
+                    getParagraphsBookmarks(cell.paragraphs())
+                    );
+            }
+        }
+    }
+
+    return documentBookmarks;
+}
+
+
+
+QStringList DocxManipulator::getParagraphsBookmarks(duckx::Paragraph& paragraphs)
+{
+    QStringList paragraphsBookmarks;
+
+    for (auto paragraph : paragraphs) {
+        // Firstly, concatenate the bookmarks
+        concatBookmarkIfSplitted(paragraph);
+        for (auto run : paragraph.runs()) {
+
+            const std::string runText = run.get_text();
+            const size_t leftBracesPos = runText.find_first_of("{{");
+            const size_t rightBracesPos = runText.find_first_of("}}");
+            const size_t bookmarkEndPos = rightBracesPos + 2;
+
+            if (leftBracesPos != std::string::npos &&
+                rightBracesPos != std::string::npos) {
+
+                paragraphsBookmarks.append(QString::fromStdString(
+                    runText.substr(leftBracesPos, bookmarkEndPos))
+                    );
+            }
+        }
+    }
+
+    return paragraphsBookmarks;
 }
 
 void DocxManipulator::replaceRunBookmarks
     (
-    duckx::Run& run,
-    const QStringList& bookmarks,
-    const QStringList& values
-    )
+        duckx::Run& run,
+        const QStringList& bookmarks,
+        const QStringList& values
+        )
 {
     if (bookmarks.length() != values.length()) {
         qDebug() << "ERROR: In method replaceRunBookmarks(): the length of the bookmarks and value lists differs";
@@ -27,7 +74,7 @@ void DocxManipulator::replaceRunBookmarks
     for (int i = 0; i < bookmarks.length(); i++) {
 
         // DEBUG
-        qDebug() << "-   B4    REPLACING" << QString::fromStdString(run.get_text());
+        //qDebug() << "-   B4    REPLACING" << QString::fromStdString(run.get_text());
 
         replaceAllFound(
             text,
@@ -38,14 +85,14 @@ void DocxManipulator::replaceRunBookmarks
         run.set_text(text);
 
         // DEBUG
-        qDebug() << "-   AFTER REPLACING" << QString::fromStdString(run.get_text());
+        //qDebug() << "-   AFTER REPLACING" << QString::fromStdString(run.get_text());
 
 
     }
 }
 
 void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
-{ 
+{
     std::vector<duckx::Run> runs;
     for (const auto& run : paragraph.runs()) {
         runs.push_back(run);
@@ -87,7 +134,6 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
         }
     }
 }
-
 
 
 void DocxManipulator::replaceAllFound

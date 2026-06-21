@@ -1,16 +1,20 @@
 #ifndef DOCXMANIPULATOR_H
 #define DOCXMANIPULATOR_H
 
-#include "duckx.hpp"
 #include <QStringList>
 #include <QString>
 #include <QDebug>
+#include "duckx.hpp"
 
 class DocxManipulator
 {
 public:
     DocxManipulator();
-    QStringList getDocumentBookmarks();
+    QStringList getDocumentBookmarks(duckx::Document& doc);
+
+private:
+    QStringList getParagraphsBookmarks(duckx::Paragraph& paragraphs);
+
     void replaceRunBookmarks(
         duckx::Run& run,
         const QStringList& bookmarks,
@@ -21,7 +25,6 @@ public:
         duckx::Paragraph& paragraph
         );
 
-private:
     void replaceAllFound(
         std::string& text,
         const std::string& bookmarkName,

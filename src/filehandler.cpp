@@ -3,7 +3,7 @@
 FileHandler::FileHandler()
 {
     // Get build directory (debug or release, the children of build directory)
-    // I hope it won't change while the program runs
+    // It shouldn't change while the program runs
     baseDirectory = new QDir(QCoreApplication::applicationDirPath());
 
     // Convert path to just the directory name
