@@ -31,6 +31,7 @@ private:
     void processParagraphs(duckx::Paragraph& paragrpahs);
     QStringList getScrollAreaValues();
     void setScrollArea();
+    QString formatBookmarkText(QString bookmark);
 
 private slots:
     void loadDocument();

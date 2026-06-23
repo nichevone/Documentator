@@ -44,7 +44,7 @@ void Window::loadDocument()
     // Need to keep that in mind
     QStringList bookmarksList = manipulator.getDocumentBookmarks(doc);
     Constants::setBookmarks(DOCUMENT_KEY, bookmarksList);
-    // DEBUG
+
     qDebug() << "BOOKMARKS LIST" << bookmarksList;
 
     if (bookmarksList.isEmpty()) {
@@ -70,6 +70,12 @@ void Window::saveDocument()
 
     if (savePath.isEmpty()) {
         return;
+    }
+
+    // On linux, if you just type the file name,
+    // it won't be saved with the .docx extension
+    if (savePath.right(5) != ".docx") {
+        savePath.append(".docx");
     }
 
     fh.copy(fh.getTemplateFilePath(), savePath);
@@ -128,7 +134,7 @@ void Window::setScrollArea()
     QGridLayout* gridLayout = new QGridLayout(container);
 
     for (int row = 0; row < bookmarks.length(); row++) {
-        QLabel* label = new QLabel(bookmarks.at(row));
+        QLabel* label = new QLabel(formatBookmarkText(bookmarks.at(row)));
         QLineEdit* edit = new QLineEdit();
 
         gridLayout->addWidget(label, row, 0);
@@ -137,4 +143,14 @@ void Window::setScrollArea()
 
     ui->scrollArea->setWidget(container);
     gridLayout->deleteLater();
+}
+
+QString Window::formatBookmarkText(QString bookmark)
+{
+    // {{bookmark_name}} -> Bookmark name
+    return bookmark
+            .remove("{{")
+            .remove("}}")
+            .replace('_', ' ')
+            .replace(0, 1, bookmark.at(0).toUpper());
 }

@@ -34,9 +34,11 @@ void DocxManipulator::replaceRunBookmarks
 {
     if (bookmarks.length() != values.length()) {
         qDebug() << "ERROR: In method replaceRunBookmarks(): the length of the bookmarks and value lists differs";
+        return;
     }
 
     std::string text = run.get_text();
+
     if (text.empty()) {
         return;
     }
@@ -44,8 +46,7 @@ void DocxManipulator::replaceRunBookmarks
     // Replace bookmarks that current run could have
     for (int i = 0; i < bookmarks.length(); i++) {
 
-        // DEBUG
-        //qDebug() << "-   B4    REPLACING" << QString::fromStdString(run.get_text());
+        qDebug() << "-   B4    REPLACING" << QString::fromStdString(run.get_text());
 
         replaceAllFound(
             text,
@@ -55,10 +56,7 @@ void DocxManipulator::replaceRunBookmarks
 
         run.set_text(text);
 
-        // DEBUG
-        //qDebug() << "-   AFTER REPLACING" << QString::fromStdString(run.get_text());
-
-
+        qDebug() << "-   AFTER REPLACING" << QString::fromStdString(run.get_text());
     }
 }
 
@@ -108,12 +106,9 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
         std::string secondText = runs[i+1].get_text();
         std::string thirdText  = runs[i+2].get_text();
 
-        // DEBUG
         qDebug() << QString::fromStdString(firstText) << "-"
                  << QString::fromStdString(secondText) << "-"
                  << QString::fromStdString(thirdText);
-
-        qDebug() << "TRIM" << onlyBraces(firstText) << onlyBraces(thirdText);
 
         if (onlyBraces(firstText) == "{{" && onlyBraces(thirdText) == "}}") {
 
@@ -121,7 +116,6 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
             // Get the full unsplitted bookmark
             std::string fullBookmark = firstText + secondText + thirdText;
 
-            // DEBUG
             qDebug() << "FULL BOOKMARK" << QString::fromStdString(fullBookmark);
 
             // Set full bookmark in the second run
