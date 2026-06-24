@@ -20,7 +20,7 @@ HEADERS += \
     src/constants.h
 
 FORMS += \
-    window.ui
+    forms/window.ui
 
 
 

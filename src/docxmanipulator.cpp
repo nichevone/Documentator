@@ -45,9 +45,6 @@ void DocxManipulator::replaceRunBookmarks
 
     // Replace bookmarks that current run could have
     for (int i = 0; i < bookmarks.length(); i++) {
-
-        qDebug() << "-   B4    REPLACING" << QString::fromStdString(run.get_text());
-
         replaceAllFound(
             text,
             bookmarks.at(i).toStdString(),
@@ -55,8 +52,6 @@ void DocxManipulator::replaceRunBookmarks
             );
 
         run.set_text(text);
-
-        qDebug() << "-   AFTER REPLACING" << QString::fromStdString(run.get_text());
     }
 }
 

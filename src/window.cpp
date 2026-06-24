@@ -36,7 +36,6 @@ void Window::loadDocument()
     ui->scrollArea->setWidget(new QWidget());
 
     fh.addTemplateFilePath(loadPath);
-
     duckx::Document doc(loadPath.toStdString());
     doc.open();
 
@@ -135,6 +134,7 @@ void Window::setScrollArea()
 
     for (int row = 0; row < bookmarks.length(); row++) {
         QLabel* label = new QLabel(formatBookmarkText(bookmarks.at(row)));
+        label->setToolTip(bookmarks.at(row));
         QLineEdit* edit = new QLineEdit();
 
         gridLayout->addWidget(label, row, 0);

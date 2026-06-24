@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtWidgets>
+#include <QProcess>
 #include "duckx.hpp"
 #include "filehandler.h"
 #include "docxmanipulator.h"

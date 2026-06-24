@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QString>
+#include <QProcess>
 
 class FileHandler
 {
