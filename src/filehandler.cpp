@@ -9,7 +9,7 @@ void FileHandler::copy(QString templateFileAbsPath, QString copyFileAbsPath)
         return;
     }
 
-    qDebug() << "File copy failed (somehow)";
+    qDebug() << "File copy failed";
 }
 
 void FileHandler::addTemplateFilePath(QString path)

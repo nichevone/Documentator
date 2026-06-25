@@ -34,17 +34,24 @@ void Window::loadDocument()
 
     // Reset scroll area
     ui->scrollArea->setWidget(new QWidget());
+    qDebug() << "Cleared QScrollArea";
 
     fh.addTemplateFilePath(loadPath);
     duckx::Document doc(loadPath.toStdString());
     doc.open();
+
+    if (!doc.is_open()) {
+        qDebug() << "ERROR: Could not open document:" << loadPath;
+        QMessageBox::critical(this, "Ошибка", "Не удалось открыть документ:\n" + loadPath);
+        return;
+    }
 
     // getDocumentBookmarks(doc) also concatenates bookmarks if they were splitted!
     // Need to keep that in mind
     QStringList bookmarksList = manipulator.getDocumentBookmarks(doc);
     Constants::setBookmarks(DOCUMENT_KEY, bookmarksList);
 
-    qDebug() << "BOOKMARKS LIST" << bookmarksList;
+    qDebug() << "Bookmarks list:"  << bookmarksList;
 
     if (bookmarksList.isEmpty()) {
         QMessageBox::warning(this, "Ошибка", "В документе не найдены закладки");
@@ -52,6 +59,7 @@ void Window::loadDocument()
     }
 
     setScrollArea();
+    qDebug() << "Updated QScrollArea with bookmarks";
     doc.save();
 }
 
@@ -80,6 +88,12 @@ void Window::saveDocument()
     fh.copy(fh.getTemplateFilePath(), savePath);
     duckx::Document doc(savePath.toStdString());
     doc.open();
+
+    if (!doc.is_open()) {
+        qDebug() << "ERROR: Could not open document:" << savePath;
+        QMessageBox::critical(this, "Ошибка", "Не удалось сохранить документ");
+        return;
+    }
 
     // Loop through paragraphs
     processParagraphs(doc.paragraphs());
@@ -122,7 +136,7 @@ QStringList Window::getScrollAreaValues()
         values.append(text);
     }
 
-    qDebug() << "VALUES LIST" << values;
+    qDebug() << "Values list:" << values;
     return values;
 }
 
