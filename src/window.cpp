@@ -7,6 +7,7 @@ Window::Window(QWidget *parent)
 {
     ui->setupUi(this);
     ui->scrollArea->setWidgetResizable(true);
+    setWindowTitle("Документатор");
 
     connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadDocument()));
     connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveDocument()));
