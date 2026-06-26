@@ -1,10 +1,19 @@
 QT += core gui widgets
 
 CONFIG += c++17
+# Build with static libs instead of dynamic
+CONFIG += static staticlib
+# Disable compiler-specific extensions
+CONFIG += strict_c++
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+QMAKE_CXXFLAGS += -fno-sized-deallocation
+
+# Strip symbols on unix-based distros
+unix:!macx {
+    QMAKE_STRIP = strip
+}
+
+
 
 # Sources
 SOURCES += \
@@ -38,6 +47,8 @@ HEADERS += \
     thirdparty/pugixml/pugiconfig.hpp \
     thirdparty/zip/zip.h \
     thirdparty/zip/miniz.h
+
+
 
 INCLUDEPATH += $$PWD/thirdparty/duckx/include
 INCLUDEPATH += $$PWD/thirdparty/pugixml
