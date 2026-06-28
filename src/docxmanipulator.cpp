@@ -95,7 +95,7 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
     std::vector<duckx::Run> runs;
     for (const auto& run : paragraph.runs()) {
         runs.push_back(run);
-        qDebug() << "First-read text:" << QString::fromStdString(run.get_text());
+        //qDebug() << "First-read text:" << QString::fromStdString(run.get_text());
     }
 
     if (runs.size() < 3) {
