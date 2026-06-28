@@ -67,16 +67,22 @@ QStringList DocxManipulator::getParagraphsBookmarks(duckx::Paragraph& paragraphs
         for (auto run : paragraph.runs()) {
 
             const std::string runText = run.get_text();
-            const size_t leftBracesPos = runText.find_first_of("{{");
-            const size_t rightBracesPos = runText.find_first_of("}}");
-            const size_t bookmarkEndPos = rightBracesPos + 2;
+            size_t pos = 0;
 
-            if (leftBracesPos != std::string::npos &&
-                rightBracesPos != std::string::npos) {
+            while (true) {
+                size_t leftBracesPos = runText.find("{{", pos);
+                if (leftBracesPos == std::string::npos) break;
 
-                paragraphsBookmarks.append(QString::fromStdString(
-                    runText.substr(leftBracesPos, bookmarkEndPos))
+                size_t rightBracesPos = runText.find("}}", leftBracesPos + 2);
+                if (rightBracesPos == std::string::npos) break;
+
+                paragraphsBookmarks.append(
+                    QString::fromStdString(
+                        runText.substr(leftBracesPos, rightBracesPos + 2 - leftBracesPos)
+                        )
                     );
+
+                pos = rightBracesPos + 2;
             }
         }
     }
@@ -101,6 +107,7 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
         std::string firstText  = runs[i].get_text();
         std::string secondText = runs[i+1].get_text();
         std::string thirdText  = runs[i+2].get_text();
+
         if (onlyBraces(firstText) == "{{" && onlyBraces(thirdText) == "}}") {
 
             // Get the full unsplitted bookmark
