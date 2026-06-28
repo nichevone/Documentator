@@ -128,6 +128,7 @@ void Window::processParagraphs(duckx::Paragraph& paragraphs)
 {
     for (auto paragraph : paragraphs) {
         for (auto run : paragraph.runs()) {
+            qDebug() << "Second-read text:" << QString::fromStdString(run.get_text());
             manipulator.replaceRunBookmarks(
                 run,
                 Constants::getBookmarks(DOCUMENT_KEY),
