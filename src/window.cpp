@@ -7,6 +7,8 @@ Window::Window(QWidget *parent)
 {
     ui->setupUi(this);
     ui->scrollArea->setWidgetResizable(true);
+    ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setWindowTitle("Документатор");
 
     connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadDocument()));
@@ -38,11 +40,15 @@ void Window::loadDocument()
     qDebug() << "Cleared QScrollArea";
 
     fh.addTemplateFilePath(loadPath);
-    duckx::Document doc(loadPath.toStdString());
+
+    // Fix you couldn't load files that are named in other than english
+    std::string loadPathConverted = loadPath.toLocal8Bit().constData();
+
+    duckx::Document doc(loadPathConverted);
     doc.open();
 
     if (!doc.is_open()) {
-        qDebug() << "ERROR: Could not open document:" << loadPath;
+        qDebug() << "ERROR: Could not open document:" << loadPathConverted;
         QMessageBox::critical(this, "Ошибка", "Не удалось открыть документ:\n" + loadPath);
         return;
     }
@@ -87,11 +93,15 @@ void Window::saveDocument()
     }
 
     fh.copy(fh.getTemplateFilePath(), savePath);
-    duckx::Document doc(savePath.toStdString());
+
+    // Had troubles naming file in other than english
+    std::string savePathConverted = savePath.toLocal8Bit().constData();
+
+    duckx::Document doc(savePathConverted);
     doc.open();
 
     if (!doc.is_open()) {
-        qDebug() << "ERROR: Could not open document:" << savePath;
+        qDebug() << "ERROR: Could not open document:" << savePathConverted;
         QMessageBox::critical(this, "Ошибка", "Не удалось сохранить документ");
         return;
     }
@@ -146,6 +156,7 @@ void Window::setScrollArea()
     QStringList bookmarks = Constants::getBookmarks(DOCUMENT_KEY);
     QWidget* container = new QWidget();
     QGridLayout* gridLayout = new QGridLayout(container);
+    gridLayout->setAlignment(Qt::AlignTop);
 
     for (int row = 0; row < bookmarks.length(); row++) {
         QLabel* label = new QLabel(formatBookmarkText(bookmarks.at(row)));
@@ -157,7 +168,7 @@ void Window::setScrollArea()
     }
 
     ui->scrollArea->setWidget(container);
-    gridLayout->deleteLater();
+    ui->scrollArea->setWidgetResizable(true);
 }
 
 QString Window::formatBookmarkText(QString bookmark)

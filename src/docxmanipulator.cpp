@@ -89,6 +89,7 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
     std::vector<duckx::Run> runs;
     for (const auto& run : paragraph.runs()) {
         runs.push_back(run);
+        qDebug() << QString::fromStdString(run.get_text());
     }
 
     if (runs.size() < 3) {
@@ -100,7 +101,6 @@ void DocxManipulator::concatBookmarkIfSplitted(duckx::Paragraph& paragraph)
         std::string firstText  = runs[i].get_text();
         std::string secondText = runs[i+1].get_text();
         std::string thirdText  = runs[i+2].get_text();
-
         if (onlyBraces(firstText) == "{{" && onlyBraces(thirdText) == "}}") {
 
             // Get the full unsplitted bookmark
