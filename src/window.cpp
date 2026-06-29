@@ -55,7 +55,7 @@ void Window::loadDocument()
     doc.open();
 
     if (!doc.is_open()) {
-        qDebug() << "ERROR: Could not open document:" << loadPathConverted;
+        qDebug() << "ERROR: Could not open document:" << QString::fromStdString(loadPathConverted);
         QMessageBox::critical(this, "Ошибка", "Не удалось открыть документ:\n" + loadPath);
         return;
     }
@@ -108,7 +108,7 @@ void Window::saveDocument()
     doc.open();
 
     if (!doc.is_open()) {
-        qDebug() << "ERROR: Could not open document:" << savePathConverted;
+        qDebug() << "ERROR: Could not open document:" << QString::fromStdString(savePathConverted);
         QMessageBox::critical(this, "Ошибка", "Не удалось сохранить документ");
         return;
     }
