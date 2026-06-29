@@ -11,8 +11,15 @@ Window::Window(QWidget *parent)
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setWindowTitle("Документатор");
 
-    connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadDocument()));
-    connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveDocument()));
+    connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadDocument()), Qt::QueuedConnection);
+    connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveDocument()), Qt::QueuedConnection);
+
+    // Menubar
+    connect(ui->loadAction, SIGNAL(triggered(bool)), this, SLOT(loadDocument()), Qt::QueuedConnection);
+    connect(ui->saveAction, SIGNAL(triggered(bool)), this, SLOT(saveDocument()), Qt::QueuedConnection);
+    connect(ui->exitAction, SIGNAL(triggered(bool)), qApp, SLOT(quit()), Qt::QueuedConnection);
+    connect(ui->insertDateAction, SIGNAL(triggered(bool)), this, SLOT(insertCurrentDate()), Qt::QueuedConnection);
+    connect(ui->clearAllAction, SIGNAL(triggered(bool)), this, SLOT(clearAll()), Qt::QueuedConnection);
 }
 
 Window::~Window()
@@ -122,6 +129,27 @@ void Window::saveDocument()
     QMessageBox::information(this, "Успех", "Документ успешно сохранен");
 }
 
+void Window::insertCurrentDate()
+{
+    QList<QLineEdit*> lineEdits = ui->scrollArea->widget()->findChildren<QLineEdit*>();
+
+    for (int i = 0; i < lineEdits.size(); ++i) {
+        if (lineEdits.at(i)->hasFocus()) {
+            lineEdits.at(i)->setText(QDate::currentDate().toString("dd.MM.yyyy"));
+            return;
+        }
+    }
+}
+
+void Window::clearAll()
+{
+    QList<QLineEdit*> lineEdits = ui->scrollArea->widget()->findChildren<QLineEdit*>();
+
+    for (int i = 0; i < lineEdits.size(); ++i) {
+        lineEdits.at(i)->clear();
+    }
+}
+
 
 
 void Window::processParagraphs(duckx::Paragraph& paragraphs)
@@ -141,8 +169,8 @@ void Window::processParagraphs(duckx::Paragraph& paragraphs)
 QStringList Window::getScrollAreaValues()
 {
     QStringList values;
-
     QList<QLineEdit*> lineEdits = ui->scrollArea->widget()->findChildren<QLineEdit*>();
+
     for (int i = 0; i < lineEdits.size(); ++i) {
         QString text = lineEdits.at(i)->text();
         values.append(text);

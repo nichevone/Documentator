@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include <QtWidgets>
-#include <QProcess>
 #include "duckx.hpp"
 #include "filehandler.h"
 #include "docxmanipulator.h"
@@ -37,6 +36,7 @@ private:
 private slots:
     void loadDocument();
     void saveDocument();
-
+    void insertCurrentDate();
+    void clearAll();
 };
 #endif // WINDOW_H

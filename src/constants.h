@@ -27,10 +27,6 @@ public:
     static QStringList getValues(std::string key) {
         return bookmarksValuesMap.at(key).second;
     }
-
-    static bool has(std::string key) {
-        return bookmarksValuesMap.count(key) > 0;
-    }
 };
 
 #endif // CONSTANTS_H

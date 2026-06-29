@@ -26,7 +26,7 @@
          <x>0</x>
          <y>0</y>
          <width>313</width>
-         <height>307</height>
+         <height>309</height>
         </rect>
        </property>
       </widget>
@@ -54,10 +54,59 @@
      <x>0</x>
      <y>0</y>
      <width>333</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="loadAction"/>
+    <addaction name="saveAction"/>
+    <addaction name="separator"/>
+    <addaction name="exitAction"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Изменить</string>
+    </property>
+    <addaction name="insertDateAction"/>
+    <addaction name="clearAllAction"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
+  <action name="loadAction">
+   <property name="text">
+    <string>Загрузить</string>
+   </property>
+  </action>
+  <action name="saveAction">
+   <property name="text">
+    <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="exitAction">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="insertDateAction">
+   <property name="text">
+    <string>Вставить текущую дату</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
+   </property>
+  </action>
+  <action name="clearAllAction">
+   <property name="text">
+    <string>Очистить все поля</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
