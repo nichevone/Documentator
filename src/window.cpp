@@ -63,14 +63,14 @@ void Window::loadDocument()
     // getDocumentBookmarks(doc) also concatenates bookmarks if they were splitted!
     // Need to keep that in mind
     QStringList bookmarksList = manipulator.getDocumentBookmarks(doc);
-    Constants::setBookmarks(DOCUMENT_KEY, bookmarksList);
-
-    qDebug() << "Bookmarks list:"  << bookmarksList;
 
     if (bookmarksList.isEmpty()) {
         QMessageBox::warning(this, "Ошибка", "В документе не найдены закладки");
         return;
     }
+
+    Constants::setBookmarks(DOCUMENT_KEY, bookmarksList);
+    qDebug() << "Bookmarks list:"  << bookmarksList;
 
     setScrollArea();
     qDebug() << "Updated QScrollArea with bookmarks";
@@ -166,20 +166,6 @@ void Window::processParagraphs(duckx::Paragraph& paragraphs)
     }
 }
 
-QStringList Window::getScrollAreaValues()
-{
-    QStringList values;
-    QList<QLineEdit*> lineEdits = ui->scrollArea->widget()->findChildren<QLineEdit*>();
-
-    for (int i = 0; i < lineEdits.size(); ++i) {
-        QString text = lineEdits.at(i)->text();
-        values.append(text);
-    }
-
-    qDebug() << "Values list:" << values;
-    return values;
-}
-
 void Window::setScrollArea()
 {
     QStringList bookmarks = Constants::getBookmarks(DOCUMENT_KEY);
@@ -198,6 +184,20 @@ void Window::setScrollArea()
 
     ui->scrollArea->setWidget(container);
     ui->scrollArea->setWidgetResizable(true);
+}
+
+QStringList Window::getScrollAreaValues()
+{
+    QStringList values;
+    QList<QLineEdit*> lineEdits = ui->scrollArea->widget()->findChildren<QLineEdit*>();
+
+    for (int i = 0; i < lineEdits.size(); ++i) {
+        QString text = lineEdits.at(i)->text();
+        values.append(text);
+    }
+
+    qDebug() << "Values list:" << values;
+    return values;
 }
 
 QString Window::formatBookmarkText(QString bookmark)
